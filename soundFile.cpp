@@ -9,6 +9,11 @@
 
 #include "Gamma/SoundFile.h"
 
+#include <FFT.h>
+#include <cmath>
+
+
+
 using namespace gam;
 
 int main(int argc, char* argv[]){
@@ -57,6 +62,35 @@ int main(int argc, char* argv[]){
 		sfout.encoding(SoundFile::PCM_16);
 		sfout.channels(2);
 		sfout.frameRate(sampleRate);
+
+//  use numFramesTotal to find the next power of two   int NextPowerof2 = numFramesTotal (do some math) size of the FFT
+		//step 2: create two new buffers at the twice of the size of the NextPowerof2 to put fft of each sound input
+		//step3: fill all with zeros :bufout[i*2  ] = 0 ;		// store left channel
+		//step4: write the original buffers into the new buffers, not all
+			
+int expon = ceil(log2(numFramesTotal));
+long int  size = pow(2, expon);
+long int twice = 2*size;
+float buffft1[twice];
+float buffft2[twice];
+
+for(int i=0; i<twice; i++){
+	
+			
+			buffft1[i] = 0;		
+			buffft2[i] = 0;		
+		}
+
+
+		for(int i=0; i<size; i++){
+	
+			
+			bufout[i*2  ] = buf[i];		// store left channel
+			bufout[i*2+1] = bufIR[i];		// store right channel
+		}
+
+
+
 		for(int i=0; i<numFramesTotal; i++){
 	
 			
@@ -77,7 +111,7 @@ int main(int argc, char* argv[]){
         sf.close();
 	    sfir.close();
 
-	    
+
 	return 0;
 		
 	}	
