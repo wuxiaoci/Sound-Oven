@@ -9,9 +9,8 @@
 
 #include "Gamma/SoundFile.h"
 
-#include <FFT.h>
+#include <Gamma/FFT.h>
 #include <cmath>
-
 
 
 using namespace gam;
@@ -81,33 +80,42 @@ for(int i=0; i<twice; i++){
 			buffft2[i] = 0;		
 		}
 
+ for (int i =0; i<numFrames; i++){
+ 	buffft1[2*i] = buf[i];
+ }
+ for (int i =0; i<numFramesIR; i++){
+ 	buffft2[2*i] = bufIR[i];
+ }
 
-		for(int i=0; i<size; i++){
-	
-			
-			bufout[i*2  ] = buf[i];		// store left channel
-			bufout[i*2+1] = bufIR[i];		// store right channel
-		}
+ CFFT<float> ft(size);
+ ft.forward(buffft1);
+ ft.forward(buffft2);
+ float real_a, imag_a, real_b, imag_b;
 
+//convolution
+for (int i=0; i<size; i++){
 
+	real_a = buffft1[2*i];
+	imag_a = buffft1[2*i+1];
 
-		for(int i=0; i<numFramesTotal; i++){
-	
-			
-			bufout[i*2  ] = buf[i];		// store left channel
-			bufout[i*2+1] = bufIR[i];		// store right channel
-		}
+	real_b = buffft2[2*i];
+	imag_b = buffft2[2*i+1];
+
+	buffft1[2*i] = (real_a*real_b-imag_a*imag_b);
+	buffft1[2*i+1] = (real_a*imag_b+imag_a*real_b); 
+}
+
+ft.inverse(buffft1);
+
 		
 		
 		// write entire buffer contents to file
 		printf("Write samples to file... ");
-		int n = sf.write(buf, numFrames);
-		if(n == numFrames){	printf("OK\n"); }
+		sfout.openWrite();
+		int n = sfout.write(buffft1, numFramesTotal);
+		if(n == numFramesTotal){	printf("OK\n"); }
 		else{printf("fail\n"); exit(-1); }
-		int n = sfir.write(buf, numFrames);
-		if(n == numFrames){	printf("OK\n"); }
-		else{printf("fail\n"); exit(-1); }
-		
+		sfout.close();
         sf.close();
 	    sfir.close();
 
@@ -195,3 +203,4 @@ for(int i=0; i<twice; i++){
 
 	return 0;
 }
+*/
