@@ -53,14 +53,14 @@ int main(int argc, char* argv[]){
 		
 		const int numFramesTotal = numFrames +numFramesIR-1;
     	float bufout[numFramesTotal];
-    	
+   
+        sfout.format(SoundFile::WAV);
+		sfout.encoding(SoundFile::PCM_16);
+		sfout.channels(1);
+		sfout.frameRate(sampleRate);
 	printf("Open new file for writing... ");
 		if(sfout.openWrite()){	printf("OK\n"); }
 		else{				printf("fail\n"); exit(-1); }
-        sfout.format(SoundFile::AIFF);
-		sfout.encoding(SoundFile::PCM_16);
-		sfout.channels(2);
-		sfout.frameRate(sampleRate);
 
 //  use numFramesTotal to find the next power of two   int NextPowerof2 = numFramesTotal (do some math) size of the FFT
 		//step 2: create two new buffers at the twice of the size of the NextPowerof2 to put fft of each sound input
